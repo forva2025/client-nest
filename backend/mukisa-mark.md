@@ -1,4 +1,4 @@
-# Mukiisa Mark - Backend Team Lead
+# Mukisa Mark Cole - Backend Team Lead
 
 ## 👨‍💻 Profile
 - **Team**: Backend Development
