@@ -54,20 +54,23 @@ class SocialMediaAccount(models.Model):
     """
     PLATFORM_CHOICES = (
         ('facebook', 'Facebook'),
-        ('twitter', 'Twitter'),
+        ('twitter', 'X (Twitter)'),
         ('instagram', 'Instagram'),
         ('linkedin', 'LinkedIn'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='social_accounts')
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
-    account_id = models.CharField(max_length=100)
-    access_token = models.CharField(max_length=255, blank=True)
+    username = models.CharField(max_length=100, help_text="The username or handle of the social media account.")
+    api_key = models.CharField(max_length=255, blank=True, help_text="API Key from the social platform.")
+    api_secret = models.CharField(max_length=255, blank=True, help_text="API Secret from the social platform.")
+    access_token = models.CharField(max_length=255, blank=True, help_text="Access Token for API requests.")
+    access_token_secret = models.CharField(max_length=255, blank=True, help_text="Access Token Secret for API requests.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('user', 'platform', 'account_id')
+        unique_together = ('user', 'platform')
 
     def __str__(self):
-        return f"{self.user.username}'s {self.platform} account"
+        return f"{self.user.username}'s {self.platform} account ({self.username})"
