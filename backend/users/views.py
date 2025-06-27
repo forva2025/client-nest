@@ -230,7 +230,7 @@ class UserRegistrationView(generics.CreateAPIView):
     POST: Register a new user account
     """
     serializer_class = UserRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny]  # Explicitly allow any user to register
     throttle_classes = [RegistrationRateThrottle]
 
     def create(self, request, *args, **kwargs):

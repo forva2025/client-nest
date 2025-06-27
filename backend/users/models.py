@@ -33,6 +33,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+
 class UserProfile(models.Model):
     """
     Extended user profile model for additional user information
