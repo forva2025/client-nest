@@ -6,6 +6,14 @@ import json
 import base64
 from datetime import datetime
 from requests_oauthlib import OAuth1Session
+import logging
+
+logger = logging.getLogger(__name__)
+
+SENSITIVE_HEADERS = frozenset({'authorization', 'cookie', 'set-cookie'})
+
+def redact_headers(headers):
+    return {k: ('<REDACTED>' if k.lower() in SENSITIVE_HEADERS else v) for k, v in headers.items()}
 
 class XService:
     def __init__(self, access_token, access_token_secret):
@@ -43,9 +51,10 @@ class XService:
                 'text': content
             }
             response = self.oauth.post(f"{X_ENDPOINTS['API_URL']}/tweets", json=data)
-            print("Response status code:", response.status_code)
-            print("Response headers:", response.headers)
-            print("Response content:", response.text)
+            logger.info("Response status code: %s", response.status_code)
+            logger.debug("Response headers: %s", redact_headers(response.headers))
+            # Truncate response content to avoid logging sensitive or PII data (Copilot suggestion)
+            logger.debug("Response content (truncated): %s", response.text[:200] + ('...' if len(response.text) > 200 else ''))
             
             if response.status_code != 201:  # Twitter API v2 returns 201 for successful creation
                 return {
@@ -62,13 +71,13 @@ class XService:
                     'created_at': tweet_data.get('created_at')
                 }
             except ValueError as e:
-                print("JSON parsing error:", str(e))
+                logger.exception("JSON parsing error")
                 return {
                     'status': 'error',
                     'message': f'Invalid JSON response from X API: {response.text}'
                 }
         except Exception as e:
-            print("Exception in post_content:", str(e))
+            logger.exception("Exception in post_content")
             return {
                 'status': 'error',
                 'message': str(e)
